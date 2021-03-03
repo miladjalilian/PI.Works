@@ -1,0 +1,15 @@
+SELECT 
+	COUNTRY,
+	ISNULL(daily_vaccinations, 
+	SELECT
+	(
+	 (SELECT MAX(daily_vaccinations) FROM
+	   (SELECT TOP 50 PERCENT daily_vaccinations FROM DBO.country_vaccination_stats ORDER BY daily_vaccinations) AS BottomHalf)
+	 +
+	 (SELECT MIN(daily_vaccinations) FROM
+	   (SELECT TOP 50 PERCENT daily_vaccinations FROM DBO.country_vaccination_stats ORDER BY daily_vaccinations DESC) AS TopHalf)
+	) / 2) DAILY_VAC
+FROM 
+	DBO.country_vaccination_stats
+GROUP BY 
+	COUNTRY
